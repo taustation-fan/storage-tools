@@ -37,9 +37,9 @@ for my $item (@armor) {
     push @{ $grouped{classify($item)} }, $item;
 }
 
-my $comparison_table = Text::Table->new('worse', 'better');
+my $comparison_table = Text::Table->new('tier', 'worse', 'better');
 
-for my $items (values %grouped) {
+for my $items (sort { $a->[0]{tier} <=> $b->[0]{tier} } values %grouped) {
     next if @$items <= 1;
     say "\n\n";
 
@@ -59,7 +59,7 @@ for my $items (values %grouped) {
                  && $w->{energy} <= $comp->{energy}
             ) {
                 say $w->{name}, "\t is worse than ", $comp->{name};
-                $comparison_table->add($w->{name}, $comp->{name});
+                $comparison_table->add($w->{tier}, $w->{name}, $comp->{name});
                 last;
             }
         }
