@@ -5,6 +5,7 @@ use warnings;
 use 5.014;
 use utf8;
 use JSON qw(decode_json);
+use Encode qw(encode_utf8);
 
 use Exporter qw(import);
 
@@ -24,7 +25,7 @@ sub extract_station_name {
 
 sub extract_storage_from_html {
     my $filename = shift;
-    open my $IN, '<:encoding(UTF-8)', $filename
+    open my $IN, '<', $filename
         or die "Cannot open '$filename' for reading: $!\n";
     while (<$IN>) {
         if ( m/^\s*items: (\{.*\}),?\s*$/) {
