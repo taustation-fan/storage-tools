@@ -30,4 +30,4 @@ for my $item (values %all_items) {
 }
 
 printf "Total mass: %d kg\n", int($total_mass);
-printf "Total value: %d (sells for %d)\n", int($total_value), int($total_value/3);
+printf "Total value: %d (sells for %d)\n", int($total_value), int($total_value*0.3);
