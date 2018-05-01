@@ -3,7 +3,6 @@ use 5.014;
 use strict;
 use warnings;
 use Digest::SHA qw(sha1_hex);
-use utf8;
 use Mojo::File;
 use Mojo::DOM;
 use File::Path qw(make_path);
@@ -13,12 +12,20 @@ use Taustation qw(extract_station_name);
 
 GetOptions(
     'move!'         => \my $Move,
-    'input-dir'     => \(my $Input_dir = 'shuttles'),
-    'output-dir'    => \(my $Output_dir = 'DATA-shuttles'),
+    'input-dir=s'   => \(my $Input_dir = 'shuttles'),
+    'output-dir=s'  => \(my $Output_dir = 'DATA-shuttles'),
 
 ) or die "Usage: $0 [--move]";
 
 my %short = (
+    'TAU STATION'               => 'TAU',
+    'DAEDALUS'                  => 'DAE',
+    'KØBENHAVN'                 => 'KOE',
+    'KøBENHAVN'                 => 'KOE', # encoding shenenigans
+    'NOUVEAU LIMOGES'           => 'NL',
+    'SOL JUMP GATE'             => 'SJG',
+    'TAUNGOO STATION'           => 'TGN',
+
     'PARIS SPATIALE'            => 'PS',
     'ALPHA CENTAURI JUMP GATE'  => 'ACJG',
     'BORDEAUX STATION'          => 'BDX',
@@ -35,11 +42,12 @@ for my $filename (glob "$Input_dir/*") {
 }
 
 sub find_free_target_filename {
-    my $short = shift;
+    my ($system, $short) = @_;
     my $dir = 'old-shuttles';
     my $postfix = 0;
+    make_path("$dir/$system");
     while (1) {
-        my $fn = sprintf "%s/%s-%04d.html", $dir, $short, $postfix;
+        my $fn = sprintf "%s/%s/%s-%04d.html", $dir, $system, $short, $postfix;
         return $fn unless -e $fn;
         $postfix++;
     }
@@ -47,7 +55,7 @@ sub find_free_target_filename {
 
 sub process_file {
     my $filename = shift;
-    my ($checksum, $from,  $data) = data_from_file($filename);
+    my ($checksum, $system, $from,  $data) = data_from_file($filename);
     my $output = "$Output_dir/$checksum.csv";
     my $from_short = $short{$from}
         or die "No shorthand known for $from\n";
@@ -55,15 +63,15 @@ sub process_file {
         my $to_short = $short{$to}
             or die "No shorthand known for $to\n";
         my $key = join '-', sort $from_short, $to_short;
-        make_path("$Output_dir/$key");
-        my $out_fn = "$Output_dir/$key/$checksum.csv";
+        make_path("$Output_dir/$system/$key");
+        my $out_fn = "$Output_dir/$system/$key/$checksum.csv";
         open my $FH, '>', $out_fn
             or die "Cannot open $out_fn for writing: $!";
         say $FH join ' ', @$_
             for @{ $data->{$to} };
     }
     if ($Move) {
-        my $target = find_free_target_filename($from);
+        my $target = find_free_target_filename($system, $from);
         say "    renaming to $target";
         rename $filename, $target
             or die $!;
@@ -72,7 +80,7 @@ sub process_file {
 
 sub data_from_file {
     my $filename = shift;
-    my $from = uc extract_station_name($filename);
+    my ($from, $system) = map uc, extract_station_name($filename);
     my $contents = do {
         local $/;
         open my $FH, '<', $filename
@@ -100,7 +108,7 @@ sub data_from_file {
             ]
         });
     });
-    return ($checksum, $from, \%to);
+    return ($checksum, $system, $from, \%to);
 }
 
 

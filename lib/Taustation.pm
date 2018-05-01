@@ -6,6 +6,7 @@ use 5.014;
 use utf8;
 use JSON qw(decode_json);
 use Encode qw(encode_utf8);
+use HTML::Entities qw(decode_entities);
 
 use Exporter qw(import);
 
@@ -17,7 +18,13 @@ sub extract_station_name {
         or die "Cannot open '$filename' for reading: $!\n";
     my $content = do { local $/; <$fh> };
     if ($content =~ m!<span class="station">\s*(.+?)\s*</span>!) {
-        my $station = (split /, /, "$1")[0];
+        my $extracted = encode_utf8 decode_entities("$1");
+        if (wantarray) {
+            my ($station, $system) = split /, /, $extracted;
+            $system =~ s/\s*system\s*$//i;
+            return ($station, $system);
+        }
+        my $station = (split /, /, $extracted)[0];
         return $station;
     }
     return undef;
