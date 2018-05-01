@@ -43,9 +43,9 @@ sub merge_inventory {
         for my $elem (@$elems) {
             my $slug = $elem->{item}{slug};
             if ($all_items->{ $slug }) {
-                $all_items->{ $slug }{ quantity } += $elem->{quantity};
-                $all_items->{ $slug }{ by_station }{ $station_name } = $elem->{quantity}
+                $all_items->{ $slug }{ by_station }{ $station_name } += $elem->{quantity}
                     if $station_name;
+                $all_items->{ $slug }{ quantity } += $elem->{quantity};
                 next;
             }
             my %new;
