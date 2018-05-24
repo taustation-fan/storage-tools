@@ -62,6 +62,10 @@ sub merge_inventory {
                     $new{ $k =~ s/_damage//r } = $v;
                 }
             }
+            elsif ($category eq 'vip') {
+                my $slug = $elem->{item}{slug};
+                $new{days} = +(split /-/, $slug)[1];
+            }
             $new{quantity} = $elem->{quantity};
             for my $attr (qw(name tier description mass value bonds rarity description)) {
                 $new{$attr} = $elem->{item}{$attr}
