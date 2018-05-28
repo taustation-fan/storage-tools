@@ -3,7 +3,6 @@ use 5.014;
 use strict;
 use warnings;
 use Digest::SHA qw(sha1_hex);
-use Mojo::File;
 use Mojo::DOM;
 use File::Path qw(make_path);
 use Getopt::Long;
@@ -14,7 +13,6 @@ GetOptions(
     'move!'         => \my $Move,
     'input-dir=s'   => \(my $Input_dir = 'shuttles'),
     'output-dir=s'  => \(my $Output_dir = 'DATA-shuttles'),
-
 ) or die "Usage: $0 [--move]";
 
 my %short = (
