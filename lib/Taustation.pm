@@ -61,6 +61,10 @@ sub merge_inventory {
                 while (my ($k, $v) = each %type_specific) {
                     $new{ $k =~ s/_damage//r } = $v;
                 }
+                if (defined $new{weapon_type}) {
+                    $new{is_long_range} = $new{weapon_type}{is_long_range};
+                    delete $new{weapon_type};
+                }
             }
             elsif ($category eq 'vip') {
                 my $slug = $elem->{item}{slug};

@@ -16,7 +16,7 @@ my $csv = Text::CSV_XS->new({binary => 1});
 my %all_items;
 
 unless (@ARGV) {
-    @ARGV = glob 'storage-*.html';
+    @ARGV = reverse glob 'storage-*.html';
 }
 
 my @stations;
@@ -31,7 +31,7 @@ for my $file (@ARGV) {
 
 # removed: 
 # bonds
-my @attrs = qw(quantity type name description tier rarity mass value hand_to_hand accuracy piercing impact energy);
+my @attrs = qw(quantity type name description tier rarity mass value hand_to_hand is_long_range accuracy piercing impact energy);
 
 
 $csv->say(*STDOUT, [@attrs, @stations]);
