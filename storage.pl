@@ -16,7 +16,7 @@ my $csv = Text::CSV_XS->new({binary => 1});
 my %all_items;
 
 unless (@ARGV) {
-    @ARGV = reverse glob 'storage-*.html';
+    @ARGV = reverse glob 'storage/storage-*.html';
 }
 
 my @stations;

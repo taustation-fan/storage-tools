@@ -30,7 +30,7 @@ my @damages = qw(piercing impact energy);
 sub classify {
     my $item = shift;
 
-    return join '/', $item->{tier}, $item->{hand_to_hand},
+    return join '/', $item->{tier}, ($item->{is_long_range} // 0),
                 map { $_ > 0 ? 1 : 0 } @{$item}{@damages};
 }
 my %grouped;
@@ -42,14 +42,14 @@ my $comparison_table = Text::Table->new('tier', 'worse', 'better');
 
 for my $weapons (values %grouped) {
     next if @$weapons <= 1;
-#    printf "\n\n\nTier %d, %s\n\n", $weapons->[0]{tier}, $weapons->[0]{hand_to_hand} ? 'Hand-to-hand' : 'long range';
+    printf "\n\n\nTier %d, %s\n\n", $weapons->[0]{tier}, $weapons->[0]{is_long_range} ? 'long' : 'short';
 
     my $t = Text::Table->new("Name", 'Mass', 'Accuracy', @damages);
     my @weapons = reverse sort {$a->{accuracy} <=> $b->{accuracy}} @$weapons;
     for my $w (@weapons) {
         $t->add($w->{name}, $w->{mass}, $w->{accuracy}, @{$w}{@damages});
     }
-#    say $t;
+    say $t;
     
     for my $idx (1..$#weapons) {
         my $w = $weapons[$idx];
@@ -59,7 +59,7 @@ for my $weapons (values %grouped) {
                  && $w->{impact} <= $comp->{impact}
                  && $w->{energy} <= $comp->{energy}
             ) {
-#                say $w->{name}, "\t is worse than ", $comp->{name};
+                say $w->{name}, "\t is worse than \t", $comp->{name};
                 $comparison_table->add($w->{tier}, $w->{name}, $comp->{name});
                 last;
             }

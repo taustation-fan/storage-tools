@@ -3,13 +3,13 @@ give you better insight into your weapons and armor of the
 [Tau Station](https://taustation.space) Universe.
 
 On each station where I have storage space, I visit the storage space, and
-save the page (HTML only) as a file named `storage-XXX.html`, where XXX
+save the page (HTML only) as a file named `storage/storage-XXX.html`, where XXX
 is a shorthand for the station, so `YoG` for *Yards of Gadani* etc.
 
 The tools all take a list of HTML file names as input, you can call them as
 
-    $ ./unique-items.pl storage-*.html
-    $ ./storage.pl storage-*.html
+    $ ./unique-items.pl storage/storage-*.html
+    $ ./storage.pl storage/storage-*.html
 
 etc.
 
