@@ -17,10 +17,22 @@ unless (@ARGV) {
     die "Usage: $0 files+\n";
 }
 
+sub storage_usage {
+    my $filename = shift;
+    open my $in, '<', $filename
+        or die "Cannot open $filename for reading: $!";
+    while (<$in>) {
+        return $1 if /(\d+)%"?\s+of it is being used/;
+    }
+    return undef;
+}
+
+my %usage;
 for my $file (@ARGV) {
     my $inventory = extract_storage_from_html($file)->{carried};
     my $station = extract_station_name($file);
     merge_inventory(\%all_items, $inventory, $station);
+    $usage{$station} = storage_usage($file);
 }
 
 my $total_mass = 0;
@@ -41,7 +53,13 @@ for my $item (values %all_items) {
 
 printf "Total value: %d (sells for %d)\n", int($total_value), int($total_value*0.3);
 for my $station (sort keys %mass_by_station) {
-    printf "    %20s: % 5d kg\n", decode_utf8($station), $mass_by_station{$station};
+    my $usage = $usage{$station};
+    printf "    %20s: % 5d kg   (%s%%)%s\n", 
+        decode_utf8($station),
+        $mass_by_station{$station},
+        $usage,
+        $usage > 90 ? '   ALMOST FULL' : '',
+        ;
 }
 printf "              TOTAL MASS: % 5d kg\n", int($total_mass);
 printf "             Days of VIP: % 5d\n", $total_days_vip;
