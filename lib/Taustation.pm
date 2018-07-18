@@ -63,7 +63,7 @@ sub merge_inventory {
                 }
                 if (defined $new{weapon_type}) {
                     $new{is_long_range} = $new{weapon_type}{is_long_range};
-                    delete $new{weapon_type};
+                    $new{weapon_type}   = $new{weapon_type}{name};
                 }
             }
             elsif ($category eq 'vip') {

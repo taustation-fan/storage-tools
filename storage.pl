@@ -31,7 +31,7 @@ for my $file (@ARGV) {
 
 # removed: 
 # bonds
-my @attrs = qw(quantity type name description tier rarity mass value hand_to_hand is_long_range accuracy piercing impact energy);
+my @attrs = qw(quantity type name description tier rarity mass value weapon_type is_long_range accuracy piercing impact energy);
 
 
 $csv->say(*STDOUT, [@attrs, @stations]);
