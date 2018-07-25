@@ -7,10 +7,11 @@ use utf8;
 use JSON qw(decode_json);
 use Encode qw(encode_utf8);
 use HTML::Entities qw(decode_entities);
+use Mojo::DOM;
 
 use Exporter qw(import);
 
-our @EXPORT_OK = qw(extract_storage_from_html merge_inventory extract_station_name);
+our @EXPORT_OK = qw(extract_storage_from_html merge_inventory extract_station_name extract_item_from_html);
 
 sub extract_station_name {
     my $filename = shift;
@@ -79,6 +80,38 @@ sub merge_inventory {
             $all_items->{$slug} = \%new;
         }
     }
+}
+
+sub extract_item_from_html {
+    my $filename = shift;
+    open my $IN, '<:encoding(UTF-8)', $filename
+        or die "Cannot open '$filename' for reading: $!\n";
+    my $dom = Mojo::DOM->new(do { local $/; <$IN> });
+    close $IN;
+    my $item_dom = $dom->at('section.item-detailed');
+    die "$filename does not seem to be an item detail page\n." unless $item_dom;
+    my %item;
+    $item{name} = $item_dom->at('h1.name')->text;
+    $item{description} = $item_dom->at('p.item-detailed-description')->text;
+
+    $item_dom = $item_dom->at('.item-detailed-stats');
+    
+    for (qw(rarity type tier accuracy value range weapon_type)) {
+        if (my $d = $item_dom->at("li.$_ span")) {
+            $item{$_} =  $d->text;
+        }
+    }
+    if ( $item{range} ) {
+        $item{is_long_range} = delete($item{range}) eq 'Long' ? 1 : 0;
+    }
+    for my $damage (qw(impact piercing energy)) {
+        if (my $d = $item_dom->at("li.$damage-damage span")) {
+            $item{$damage} = $d->text;
+        }
+    }
+    $item{mass} = $item_dom->at('li.weight span')->text =~ s/\s*kg//r;
+
+    return \%item;
 }
 
 1;
