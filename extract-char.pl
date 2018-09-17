@@ -57,6 +57,7 @@ sub transform {
     $d->{extracted}{course_count} = @{$d->{Education}};
     $d->{extracted}{credits} = 0 + ($d->{Bank}{Credits} =~ tr/,//d);
     $d->{extracted}{bonds} = 0 + ($d->{Bank}{Bonds} =~ tr/,//d);
+    $d->{extracted}{level} = $d->{level} if defined $d->{level};
     
 }
 
@@ -152,6 +153,16 @@ sub data_from_file {
             $data{$heading_str} = $t;
         }
     });
+    {
+        my $stats = $content->at('div.statistics-container')->at('dl.statistics');
+        my $keys = $stats->find('dt')->map('text');
+        my $values = $stats->find('dd')->map('text');
+        my %d;
+        @d{ @$keys } = @$values;
+        if ( $d{'Level:'} =~ /(\d+)\s*\@\s*(\d+(?:\.\d+))\s*%/) {
+            $data{level} = $1 + ($2/100);
+        }
+    }
     $data{date} = $date;
     return ($date, \%data);
 }
