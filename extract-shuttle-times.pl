@@ -22,7 +22,7 @@ my %short = (
     'KøBENHAVN'                 => 'KOE', # encoding shenenigans
     'NOUVEAU LIMOGES'           => 'NL',
     'SOL JUMP GATE'             => 'SJG',
-    'TAUNGOO STATION'           => 'TGN',
+    'TAUNGOO STATION'           => 'TNG',
 
     'PARIS SPATIALE'            => 'PS',
     'ALPHA CENTAURI JUMP GATE'  => 'ACJG',

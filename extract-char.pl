@@ -45,13 +45,18 @@ sub transform {
     {
         my %rep;
         for my $r (@{ $d->{Reputation} }) {
-            $rep{$r->{Affiliation}} = 0 + $r->{Reputation} =~ s/%$//r;
+            if ($r->{Reputation} =~ /[a-z]/) {
+                $rep{$r->{Affiliation}} = $r->{Reputation};
+            }
+            else {
+                $rep{$r->{Affiliation}} = 0 + $r->{Reputation} =~ s/%$//r;
+            }
         }
         $d->{extracted}{reputation} = \%rep;
     }
     $d->{extracted}{course_count} = @{$d->{Education}};
-    $d->{extracted}{credits} = 0 + $d->{Bank}{Credits};
-    $d->{extracted}{bonds} = 0 + $d->{Bank}{Bonds};
+    $d->{extracted}{credits} = 0 + ($d->{Bank}{Credits} =~ tr/,//d);
+    $d->{extracted}{bonds} = 0 + ($d->{Bank}{Bonds} =~ tr/,//d);
     
 }
 
