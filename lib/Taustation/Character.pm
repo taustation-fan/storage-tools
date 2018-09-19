@@ -73,9 +73,13 @@ sub transform {
         }
         $d->{extracted}{reputation} = \%rep;
     }
+
+    $d->{Bank}{$_} =~ tr/,//d for qw(Bonds Credits);
+    $d->{Bank}{$_} =~ s/\n.*//s for qw(Bonds Credits);
+
     $d->{extracted}{course_count} = @{$d->{Education}};
-    $d->{extracted}{credits} = 0 + ($d->{Bank}{Credits} =~ tr/,//d);
-    $d->{extracted}{bonds} = 0 + ($d->{Bank}{Bonds} =~ tr/,//d);
+    $d->{extracted}{credits} = 0 + $d->{Bank}{Credits};
+    $d->{extracted}{bonds} = 0 + $d->{Bank}{Bonds};
     $d->{extracted}{level} = $d->{level} if defined $d->{level};
     
 }
