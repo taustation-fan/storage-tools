@@ -31,10 +31,11 @@ for my $filename (glob "syndicate/characters/*/*.html") {
         level   => $extracted{level},
         bonds   => $extracted{bonds},
         credits => $extracted{credits},
+        course_count    => $extracted{course_count},
     };
 }
 
-my @keys = qw(stats level bonds credits);
+my @keys = qw(stats level bonds credits course_count);
 my @players = sort keys %all_data;
 my @columns = ('Date');
 for my $player (@players) {
