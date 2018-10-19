@@ -32,6 +32,14 @@ my %short = (
     'SPIRIT OF BOTSWANA'        => 'SOB',
     'THE GHOST OF MALI'         => 'GOM',
     'YARDS OF GADANI'           => 'YOG',
+
+    "BARNARD'S STAR JUMP GATE"  => 'BSJG',
+    'CAEN STRONGHOLD'           => 'CSH',
+    "HOPKINS' LEGACY"           => 'HOL',
+    'ESTACIÓN DE AMAZON'        => 'AMZ',
+    'ESTACIóN DE AMAZON'        => 'AMZ',
+    'THE MAID OF ORLÉANS'       => 'MOO',
+    'THE MAID OF ORLéANS'       => 'MOO',
 );
 
 for my $filename (glob "$Input_dir/*") {
@@ -79,6 +87,7 @@ sub process_file {
 sub data_from_file {
     my $filename = shift;
     my ($from, $system) = map uc, extract_station_name($filename);
+    $system =~ s/[^a-z ]//ig;
     my $contents = do {
         local $/;
         open my $FH, '<', $filename
