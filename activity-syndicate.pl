@@ -22,7 +22,7 @@ my %weight = (
     level       => 1000,
     credits     => 0.2,
     stats       => 100,
-    couse_count => 500,
+    course_count => 500,
 );
 
 # whitelist players for which there is a data set today,
