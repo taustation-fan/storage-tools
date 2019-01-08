@@ -11,7 +11,7 @@ use Mojo::DOM;
 
 use Exporter qw(import);
 
-our @EXPORT_OK = qw(extract_storage_from_html merge_inventory extract_station_name extract_item_from_html);
+our @EXPORT_OK = qw(extract_storage_from_html merge_inventory extract_station_name extract_item_from_html slug_from_name);
 
 sub extract_station_name {
     my $filename = shift;
@@ -77,6 +77,7 @@ sub merge_inventory {
             }
             $new{type} = $elem->{item}{item_type}{name};
             $new{by_station} = { $station_name => $new{quantity} } if $station_name;
+            $new{slug} = $slug;
             $all_items->{$slug} = \%new;
         }
     }
@@ -110,8 +111,19 @@ sub extract_item_from_html {
         }
     }
     $item{mass} = $item_dom->at('li.weight span')->text =~ s/\s*kg//r;
+    $item{slug} = slug_from_name($item{name});
 
     return \%item;
+}
+
+sub slug_from_name {
+    my $name = shift;
+    require Text::Unidecode;
+    $name = lc Text::Unidecode::unidecode($name);
+    $name =~ s/\s+/-/g;
+    $name =~ s/[^a-z0-9-]//g;
+    $name =~ s/-{2,}/-/g;
+    return $name;
 }
 
 1;

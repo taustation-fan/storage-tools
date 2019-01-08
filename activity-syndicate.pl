@@ -8,7 +8,7 @@ use Mojo::DOM;
 use JSON::XS qw(encode_json);
 use File::Path qw(make_path);
 use List::Util qw(sum);
-use Data::Dumper;
+use Statistics::Basic qw(stddev);
 use Date::Simple qw(today);
 
 my %all_data;
@@ -52,11 +52,15 @@ for my $filename (glob "syndicate/characters/*/*.html") {
     $dates{$date}++;
     my %extracted = %{ $data->{extracted} };
     my $stats = sum values %{ $extracted{stats} };
+    my $physical_stats = $extracted{stats}->{Strength}
+                       + $extracted{stats}->{Stamina}
+                       + $extracted{stats}->{Agility};
     $all_data{$character}{$date} = {
         stats   => $stats,
         level   => $extracted{level},
         bonds   => $extracted{bonds},
         credits => $extracted{credits},
+        physical_stats  => $physical_stats,
         course_count    => $extracted{course_count},
     };
 }
@@ -76,6 +80,21 @@ for my $player (sort keys %all_data) {
     my $inactivity = $score == 0 ? 'INACTIVE' :
                      $score < 500 ? 'little activity' : '';
     say $player, "\t", $score, "\t", $inactivity;
+}
+
+my %by_tier;
+for my $pd (values %all_data) {
+    my $data = $pd->{$today};
+    my $level = int($data->{level});
+    my $tier = int(($level + 4) / 5);
+    push @{ $by_tier{$tier} }, $data->{physical_stats};
+}
+
+say "\nStats averages by tier";
+say join "\t", "tier", "avg", "stddev";
+for my $tier (sort keys %by_tier) {
+    my $avg = sum(@{$by_tier{$tier}}) / @{$by_tier{$tier}};
+    say join "\t", $tier, sprintf("%.2f", $avg), stddev(@{$by_tier{$tier}});
 }
 
 sub score_diff {

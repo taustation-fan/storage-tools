@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use autodie;
-use JSON qw(decode_json);
+use JSON qw(encode_json);
 use Text::CSV_XS;
 use Data::Dumper;
 use lib 'lib';
@@ -43,6 +43,15 @@ my @sorted = sort {
     || $a->{tier} <=> $b->{tier}
     || $a->{name} cmp $b->{name}
 } grep { state $seen; !$seen->{$_->{name}}++ } values(%storage_items), @other_items;
+
+{
+    my %slug_to_name;
+    $slug_to_name{$_->{slug}} = $_->{name} for @sorted;
+    open my $OUT, '>:', '_items.json'
+        or die "Cannot write _items.json: $!";
+    print $OUT encode_json(\%slug_to_name);
+    close $OUT;
+}
 
 for my $item (@sorted) {
     $csv->say(*STDOUT, [(map $_ // '', @{$item}{@attrs})]);
