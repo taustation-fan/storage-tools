@@ -8,7 +8,7 @@ use Mojo::DOM;
 use JSON::XS qw(encode_json);
 use File::Path qw(make_path);
 use List::Util qw(sum);
-use Statistics::Basic qw(stddev);
+use Statistics::Basic qw(stddev median);
 use Date::Simple qw(today);
 
 my %all_data;
@@ -91,10 +91,13 @@ for my $pd (values %all_data) {
 }
 
 say "\nStats averages by tier";
-say join "\t", "tier", "avg", "stddev";
+say join "\t", "tier", "avg", "stddev", "median";
 for my $tier (sort keys %by_tier) {
-    my $avg = sum(@{$by_tier{$tier}}) / @{$by_tier{$tier}};
-    say join "\t", $tier, sprintf("%.2f", $avg), stddev(@{$by_tier{$tier}});
+    my @values   = @{$by_tier{$tier}};
+    my $avg      = sum(@values) / @values;
+    my $stddev   = stddev(@values)->query;
+    my $median   = median(@values);
+    printf "%.d\t%.2f\t%.2f\t%.2f\n", $tier, $avg, $stddev, $median;
 }
 
 sub score_diff {

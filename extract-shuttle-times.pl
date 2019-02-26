@@ -40,6 +40,15 @@ my %short = (
     'ESTACIóN DE AMAZON'        => 'AMZ',
     'THE MAID OF ORLÉANS'       => 'MOO',
     'THE MAID OF ORLéANS'       => 'MOO',
+
+    'L 726-8 JUMP GATE'         => 'L7J',
+    'ORWELL STRONGHOLD'         => 'OSH',
+    'SPIRIT OF TIANJIN'         => 'SOT',
+
+    'SPIRIT OF NEW YORK CITY'   => 'NYC',
+    'ASIMOV FREEHOLD'           => 'ASI',
+    'CAPE VERDE STRONGHOLD'     => 'CVS',
+    'YZ CETI JUMP GATE'         => 'YZJ',
 );
 
 for my $filename (glob "$Input_dir/*") {
